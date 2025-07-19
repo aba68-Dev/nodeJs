@@ -78,3 +78,13 @@ Delete an item:
 ```
 curl -X DELETE http://localhost:3000/items/1
 ```
+
+## Running the Client
+
+Make sure the server is running first (`npm start`). In a new terminal, run:
+
+```
+node client.js
+```
+
+The client will perform create, read, update, and delete operations against the API and log the results.
