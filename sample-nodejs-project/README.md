@@ -1,6 +1,16 @@
-# Sample Node.js Project
+# Sample Node.js Project (Full-Featured)
 
-This is a simple Node.js project using Express.js. It starts a web server that responds with `Hello, World!` on the root route (`/`).
+This project is a full-featured Node.js CRUD API with:
+- Persistent storage (SQLite)
+- Input validation (Joi)
+- Authentication (JWT, bcryptjs)
+- Pagination & filtering
+- Timestamps (createdAt, updatedAt)
+- Centralized error handling
+- Logging (morgan)
+- CORS support
+- Swagger/OpenAPI documentation
+- Unit tests (Jest, Supertest)
 
 ## Prerequisites
 - Node.js (v14 or higher recommended)
@@ -18,73 +28,55 @@ npm install
 npm start
 ```
 
-The server will start on port 3000 by default. Visit [http://localhost:3000](http://localhost:3000) in your browser to see the response.
+The server will start on port 3000 by default. Swagger docs are available at [http://localhost:3000/api-docs](http://localhost:3000/api-docs).
 
-## Customizing the Port
-
-You can set a custom port by setting the `PORT` environment variable:
-
-```
-PORT=4000 npm start
-```
+## Authentication
+- Register a user: `POST /register` with `{ "username": "user", "password": "pass" }`
+- Login: `POST /login` with `{ "username": "user", "password": "pass" }` to receive a JWT token
+- For all `/items` endpoints, include the token in the `Authorization` header: `Bearer <token>`
 
 ## API Endpoints
 
-### Create an Item
-- **POST** `/items`
-- Body: `{ "name": "Item Name" }`
-- Response: The created item object
-
-### Get All Items
-- **GET** `/items`
-- Response: Array of all items
-
-### Get a Single Item
-- **GET** `/items/:id`
-- Response: The item object, or 404 if not found
-
-### Update an Item
-- **PUT** `/items/:id`
-- Body: `{ "name": "New Name" }`
-- Response: The updated item object, or 404 if not found
-
-### Delete an Item
-- **DELETE** `/items/:id`
-- Response: The deleted item object, or 404 if not found
-
-## Example Usage with curl
-
-Create an item:
+### Register
 ```
-curl -X POST -H "Content-Type: application/json" -d '{"name":"Sample Item"}' http://localhost:3000/items
+curl -X POST -H "Content-Type: application/json" -d '{"username":"user","password":"pass"}' http://localhost:3000/register
 ```
 
-Get all items:
+### Login
 ```
-curl http://localhost:3000/items
-```
-
-Get a single item:
-```
-curl http://localhost:3000/items/1
+curl -X POST -H "Content-Type: application/json" -d '{"username":"user","password":"pass"}' http://localhost:3000/login
 ```
 
-Update an item:
+### Create an Item (Authenticated)
 ```
-curl -X PUT -H "Content-Type: application/json" -d '{"name":"Updated Name"}' http://localhost:3000/items/1
-```
-
-Delete an item:
-```
-curl -X DELETE http://localhost:3000/items/1
+curl -X POST -H "Authorization: Bearer <token>" -H "Content-Type: application/json" -d '{"name":"Item Name"}' http://localhost:3000/items
 ```
 
-## Running the Client
-
-Make sure the server is running first (`npm start`). In a new terminal, run:
-
+### Get All Items (Authenticated, with pagination/filtering)
 ```
-node client.js
+curl -H "Authorization: Bearer <token>" "http://localhost:3000/items?page=1&limit=10&name=search"
 ```
 
-The client will perform create, read, update, and delete operations against the API and log the results.
+### Get a Single Item (Authenticated)
+```
+curl -H "Authorization: Bearer <token>" http://localhost:3000/items/1
+```
+
+### Update an Item (Authenticated)
+```
+curl -X PUT -H "Authorization: Bearer <token>" -H "Content-Type: application/json" -d '{"name":"New Name"}' http://localhost:3000/items/1
+```
+
+### Delete an Item (Authenticated)
+```
+curl -X DELETE -H "Authorization: Bearer <token>" http://localhost:3000/items/1
+```
+
+## Running Tests
+
+```
+npm test
+```
+
+## Swagger/OpenAPI Docs
+Visit [http://localhost:3000/api-docs](http://localhost:3000/api-docs) for interactive API documentation.
